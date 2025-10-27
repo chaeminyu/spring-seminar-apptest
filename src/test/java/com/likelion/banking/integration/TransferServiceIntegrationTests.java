@@ -15,16 +15,7 @@ import java.util.Optional;
 import static org.mockito.BDDMockito.*;
 
 /**
- * TransferService의 통합 테스트
- * 
- * 단위 테스트와의 차이점:
- * - @SpringBootTest로 스프링 컨텍스트가 실행됨
- * - @Autowired로 실제 빈을 주입받음
- * - @MockBean으로 스프링 컨텍스트의 빈을 Mock으로 대체
- * 
- * 목표:
- * - 스프링 컨텍스트 내에서 테스트 수행
- * - @Transactional 등 스프링 기능이 정상 작동하는지 확인
+ * TransferService의 통합 테스트 - 정답 코드
  */
 @SpringBootTest
 class TransferServiceIntegrationTests {
@@ -44,15 +35,21 @@ class TransferServiceIntegrationTests {
     @Test
     @DisplayName("통합 테스트: 스프링 컨텍스트 내에서 계좌 이체가 수행된다")
     void transferMoneyIntegrationTest() {
-        // TODO: Given - 테스트 데이터 준비
-        // 힌트: 단위 테스트와 동일하게 작성하면 됩니다
-        
-        
-        // TODO: When - 메서드 실행
-        
-        
-        // TODO: Then - 결과 검증
-        
+        // Given
+        Account sender = new Account(1L, "John", new BigDecimal(1000));
+        Account receiver = new Account(2L, "Jane", new BigDecimal(1000));
+
+        given(accountRepository.findById(1L))
+                .willReturn(Optional.of(sender));
+        given(accountRepository.findById(2L))
+                .willReturn(Optional.of(receiver));
+
+        // When
+        transferService.transferMoney(1L, 2L, new BigDecimal(100));
+
+        // Then
+        verify(accountRepository).changeAmount(1L, new BigDecimal(900));
+        verify(accountRepository).changeAmount(2L, new BigDecimal(1100));
     }
 
     /**
